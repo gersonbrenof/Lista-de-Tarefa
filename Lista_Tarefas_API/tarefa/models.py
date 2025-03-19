@@ -22,10 +22,10 @@ class Tarefa(models.Model):
         ('R', 'Replanejada'),
     )
     usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
-    Titulo_Tarefa = models.CharField(max_length=100, blank=True, null=True)
-    descricao = models.TextField(blank= True, null=True)
+    Titulo_Tarefa = models.CharField(max_length=100, blank=False, null=False)
+    descricao = models.TextField(blank= False, null=False)
     data_croacao = models.DateField(auto_now_add=True)
-    data_limite = models.DateField(blank=False, null=False)
+    data_limite = models.DateField(blank=True, null=True)
     status = models.CharField(max_length=1, choices=STATUS_CHOICES, default='P')
     
     def __str__(self):
