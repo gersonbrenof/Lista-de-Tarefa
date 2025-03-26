@@ -43,7 +43,9 @@ INSTALLED_APPS = [
     'tarefa',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist', 
-    'drf_yasg'
+    'drf_yasg',
+    'corsheaders',
+    'drf_spectacular',
 ]
 
 MIDDLEWARE = [
@@ -54,6 +56,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'Lista_Tarefas_API.urls'
@@ -110,7 +113,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'pt-br'
 
 TIME_ZONE = 'UTC'
 
@@ -127,13 +130,23 @@ STATIC_URL = 'static/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Lista de Tarefas',
+    'DESCRIPTION': 'Este é um projeto desenvolvido com **Django Rest Framework** que permite o gerenciamento de tarefas. O sistema inclui autenticação, e cada tarefa está associada a um usuário. O projeto oferece funcionalidades **CRUD** (Criar, Ler, Atualizar e Excluir) para as tarefas, além de gerenciamento de autenticação com **JWT** (JSON Web Token).',
+    'VERSION': '2.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    # OTHER SETTINGS
+}
+CORS_ALLOW_ALL_ORIGINS = True  
+CORS_ALLOW_CREDENTIALS = True
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',  # Apenas usuários autenticados acessam a API
-    )
+    ),
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',  # Esquema para Swagger/ReDoc
 }
 # Configurações de E-mail
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

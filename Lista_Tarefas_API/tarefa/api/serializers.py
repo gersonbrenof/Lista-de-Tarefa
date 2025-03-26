@@ -6,11 +6,14 @@ from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.tokens import RefreshToken
 class UsuarioSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(required=True)
-    password = serializers.CharField(write_only=True)
+    password = serializers.CharField(write_only=True, min_length=8, error_messages = {"Min_length":"A senha deve possuir mais de 8 caracteres"})
     class Meta:
         model = Usuario
         fields = ('id', 'nome_usuario','email',  'password')
         extra_kwargs = {'password': {'write_only': True}} 
+    def validate_passsword(self,value):
+        if " " in value:
+            raise serializers.ValidationError("A senha não pode conter espaço em branco")
         
     def create(self, validated_data):
         email = validated_data.pop('email')

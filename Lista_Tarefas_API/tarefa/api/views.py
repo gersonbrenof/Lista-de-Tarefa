@@ -7,6 +7,9 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import UsuarioSerializer, LoginSerializer, TarefaSerializer, Tarefa
 from rest_framework.permissions import  AllowAny, IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.decorators import action
+from django.utils.timezone import now
+from django.shortcuts import get_object_or_404
 
 class RegistrarUsuarioView(APIView):
     permission_classes = [AllowAny]
@@ -43,11 +46,6 @@ class TarefaViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated] 
     
     
-    def get_objet(self):
-        try:
-            obj = super().get_object()
-        except Tarefa.DoesNotExist:
-            raise PermissionDenied("Não é possivel acessar essa tarefa por favo de acessar uma valida")
     
     def get_queryset(self):
         
@@ -63,7 +61,22 @@ class TarefaViewSet(viewsets.ModelViewSet):
         usuario_logado = self.request.user.usuario
          # verificar se o usuario esat logado
         if instance.usuario != usuario_logado:
-            raise PermissionDenied("Não é possivek deletar essa tarefa por favo deletar uma valida")
+            raise PermissionDenied("Não é possivel deletar essa tarefa por favo deletar uma valida")
         
         instance.delete()
+        return Response({'mesage': 'tarefa delatada com sucesso'},status=status.HTTP_204_NO_CONTENT )
+    @action(detail=True, methods=['post'])
+    def finalizer_tarefa(self, request,pk=None):
+        usuario_logado = self.request.user.usuario
+        tarefa = get_object_or_404(Tarefa, id=pk)
+        if tarefa.status == 'F':
+            return Response({'message:' 'Tarefa Ja foi Finalizada'},status=status.HTTP_400_BAD_REQUEST)
+        elif tarefa.usuario != usuario_logado:
+            raise PermissionDenied("Não é possivel finalizar essa tarefa por favor finalizar uma tarefa valida")
+        tarefa.status = 'F'
+        tarefa.data_limite = now()
+        tarefa.save()
+        return Response({
+            'message':'Tarefa Finalizada com Sucesso',
+            'Data Finalização': tarefa.data_limite}, status=status.HTTP_200_OK)
         
